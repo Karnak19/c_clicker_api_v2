@@ -59,10 +59,10 @@ app.put("/user/:id/click", (req, res) => {
    });
 });
 
-// Delete a user
-// app.delete("/user/:id", (req, res) => {
-//    dbconnect.query("DELETE FROM Users WHERE id=?", [req.params.id], (err, rows, field) => {
-//       if (!err) res.send('Deleted successfully');
-//       else console.log(err);
-//    });
-// });
+//Delete a user
+app.delete("/user/:id", (req, res) => {
+   dbconnect.query("DELETE FROM Users WHERE id=?", [req.params.id], (err, rows, field) => {
+      if (!err) res.send("Deleted successfully");
+      else console.log(err);
+   });
+});
