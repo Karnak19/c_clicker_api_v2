@@ -4,6 +4,8 @@ const express = require("express");
 const app = express();
 const bodyparser = require("body-parser");
 
+const port = process.env.PORT || 3000;
+
 // Config for Database connection
 const config = require("./config.js");
 const connection = mysql.createConnection(config);
@@ -15,7 +17,7 @@ connection.connect(err => {
    else console.log("DB connection failed" + err);
 });
 
-app.listen(process.env.PORT, () => console.log("Express server started"));
+app.listen(port, () => console.log("Express server started"));
 
 //get all users
 app.get("/user", (req, res) => {
