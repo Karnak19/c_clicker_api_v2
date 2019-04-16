@@ -1,28 +1,25 @@
+require("dotenv").config();
 const mysql = require("mysql2");
 const express = require("express");
 const app = express();
 const bodyparser = require("body-parser");
 
+// Config for Database connection
+const config = require("./config.js");
+const connection = mysql.createConnection(config);
+
 app.use(bodyparser.json());
 
-var dbconnect = mysql.createConnection({
-   host: "localhost",
-   user: "BazESO",
-   password: "skateforfun",
-   database: "c_clicker_v2",
-   multipleStatements: true
-});
-
-dbconnect.connect(err => {
+connection.connect(err => {
    if (!err) console.log("DB connection success");
    else console.log("DB connection failed" + err);
 });
 
-app.listen(3000, () => console.log("Express server started"));
+app.listen(process.env.PORT, () => console.log("Express server started"));
 
 //get all users
 app.get("/user", (req, res) => {
-   dbconnect.query("SELECT * FROM Users", (err, rows, field) => {
+   connection.query("SELECT * FROM Users", (err, rows, field) => {
       if (!err) res.send(rows);
       else console.log(err);
    });
@@ -30,30 +27,27 @@ app.get("/user", (req, res) => {
 
 // Get an user
 app.get("/user/:id", (req, res) => {
-   dbconnect.query("SELECT * FROM Users WHERE id=?", [req.params.id], (err, rows, field) => {
+   connection.query("SELECT * FROM Users WHERE id=?", [req.params.id], (err, rows, field) => {
       if (!err) res.send(rows);
       else console.log(err);
    });
 });
 
-// Post an user
-app.post("/user/:id", (req, res) => {
-   let user = req.body;
-   var sql = "INSERT INTO Users (pseudo) VALUES ?";
-   dbconnect.query(sql, [user.pseudo], (err, rows, field) => {
-      if (!err)
-         res.forEach(e => {
-            if (e.constructor == Array) {
-               res.send("Inserted succesfully");
-            }
-         });
-      else console.log(err);
+// TODO: Add an user
+app.post("/user/subscribe", (req, res) => {
+   let pseudo = req.body.pseudo;
+   let insert = { id: null, pseudo: pseudo, score: 0, isLogged: 0 };
+   let isLogged = false;
+   let sql = "INSERT INTO Users SET ?";
+   connection.query(sql, [insert], (err, rows, field) => {
+      if (!err) res.send(rows);
+      else console.log(err, pseudo);
    });
 });
 
-//Increment score
+//Increment user score
 app.put("/user/:id/click", (req, res) => {
-   dbconnect.query("UPDATE Users SET score=score+1 WHERE id=?", [req.params.id], (err, rows, field) => {
+   connection.query("UPDATE Users SET score=score+1 WHERE id=?", [req.params.id], (err, rows, field) => {
       if (!err) res.send(rows);
       else console.log(err);
    });
@@ -61,7 +55,7 @@ app.put("/user/:id/click", (req, res) => {
 
 //Delete a user
 app.delete("/user/:id", (req, res) => {
-   dbconnect.query("DELETE FROM Users WHERE id=?", [req.params.id], (err, rows, field) => {
+   connection.query("DELETE FROM Users WHERE id=?", [req.params.id], (err, rows, field) => {
       if (!err) res.send("Deleted successfully");
       else console.log(err);
    });
