@@ -35,23 +35,27 @@ app.get("/user/:id", (req, res) => {
    });
 });
 
-// TODO: Add an user
+// Add an user
 app.post("/user/subscribe", (req, res) => {
    let pseudo = req.body.pseudo;
-   let insert = { id: null, pseudo: pseudo, score: 0, isLogged: 0 };
    let isLogged = false;
+   let insert = { id: null, pseudo: pseudo, score: 0, isLogged: isLogged };
    let sql = "INSERT INTO Users SET ?";
    connection.query(sql, [insert], (err, rows, field) => {
-      if (!err) res.send(rows);
-      else console.log(err, pseudo);
+      if (!err) {
+         res.send(rows);
+         console.log(`User ${pseudo} successfully created`);
+      } else console.log(err);
    });
 });
 
 //Increment user score
 app.put("/user/:id/click", (req, res) => {
    connection.query("UPDATE Users SET score=score+1 WHERE id=?", [req.params.id], (err, rows, field) => {
-      if (!err) res.send(rows);
-      else console.log(err);
+      if (!err) {
+         res.send(rows);
+         console.log(`${req.params.id} click successfully`);
+      } else console.log(err);
    });
 });
 
