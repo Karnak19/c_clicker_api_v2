@@ -1,8 +1,14 @@
 require("dotenv").config();
 const mysql = require("mysql2");
+const cors = require("cors");
 const express = require("express");
 const app = express();
 const bodyparser = require("body-parser");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
+
+app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(cors());
 
 const port = process.env.PORT || 3000;
 
